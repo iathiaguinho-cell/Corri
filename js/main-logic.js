@@ -718,7 +718,9 @@ function signOut() {
         firebase.database().ref(`/users/${currentViewingUid}/races`).off();
     }
     // Desliga listener de tempo real V2
-    firebase.database().ref().off();
+    firebase.database().ref('corridas').off();
+    firebase.database().ref('resultadosEtapas').off();
+
 
     auth.signOut().catch(err => console.error("Erro no logout:", err));
 }
@@ -730,20 +732,37 @@ function signOut() {
 
 function fetchAllData() {
     const db = firebase.database();
-    
-    // Usamos .ref() para pegar todos os dados relevantes de uma vez
-    db.ref().on('value', snapshot => {
-        const data = snapshot.val() || {};
-        appState.allCorridas = data.corridas || { copaAlcer: {}, geral: {} };
-        appState.resultadosEtapas = data.resultadosEtapas || {};
-        appState.rankingData = data.rankingCopaAlcer || {};
-        
-        console.log("Calendário V2 carregado:", appState);
-        renderContentV2();
+
+    // ---- INÍCIO DA CORREÇÃO ----
+    // Em vez de ler a raiz inteira, lemos os nós específicos que precisamos.
+    // Isso respeita as regras de segurança que definimos.
+
+    // Listener 1: Para as corridas
+    db.ref('corridas').on('value', snapshot => {
+        appState.allCorridas = snapshot.val() || { copaAlcer: {}, geral: {} };
+        console.log("Calendário V2 (Corridas) carregado:", appState.allCorridas);
+        renderContentV2(); // Re-renderiza quando as corridas mudam
     }, error => {
-        console.error("Falha ao carregar dados do calendário V2:", error);
+        console.error("Falha ao carregar o nó /corridas:", error);
     });
+
+    // Listener 2: Para os resultados das etapas
+    db.ref('resultadosEtapas').on('value', snapshot => {
+        appState.resultadosEtapas = snapshot.val() || {};
+        console.log("Calendário V2 (Resultados) carregado:", appState.resultadosEtapas);
+        renderContentV2(); // Re-renderiza quando os resultados mudam
+    }, error => {
+        console.error("Falha ao carregar o nó /resultadosEtapas:", error);
+    });
+
+    // O ranking pode ser carregado uma única vez, pois não é tão dinâmico
+    db.ref('rankingCopaAlcer').once('value', snapshot => {
+        appState.rankingData = snapshot.val() || {};
+        console.log("Calendário V2 (Ranking) carregado:", appState.rankingData);
+    });
+    // ---- FIM DA CORREÇÃO ----
 }
+
 
 function renderContentV2() {
     const todasCorridasCopa = Object.values(appState.allCorridas.copaAlcer || {});
@@ -960,3 +979,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
