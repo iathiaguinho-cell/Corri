@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Currículo de Corredores - thIAguinho Soluções</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 <body>
 
@@ -26,14 +27,93 @@
         <div id="admin-panel" class="hidden">
             <h2>⚙️ Painel de Admin</h2>
             
-            <h3>Aprovações Pendentes</h3>
-            <div id="pending-list">
-                <div class="loader" style="color:#1f2027;">Carregando...</div>
-            </div>
-            
-            <h3>Usuários Aprovados</h3>
-            <div id="approved-list">
-                 <div class="loader" style="color:#1f2027;">Carregando...</div>
+            <div class="admin-grid">
+                <div class="admin-section" id="admin-users-section">
+                    <h3>Aprovações Pendentes</h3>
+                    <div id="pending-list">
+                        <div class="loader" style="color:#1f2027;">Carregando...</div>
+                    </div>
+                    
+                    <h3>Usuários Aprovados</h3>
+                    <div id="approved-list">
+                         <div class="loader" style="color:#1f2027;">Carregando...</div>
+                    </div>
+                </div>
+
+                <div class="admin-section" id="admin-races-section">
+                    
+                    <div>
+                        <h3 id="form-title">Cadastrar Nova Corrida</h3>
+                        <form id="race-form-admin">
+                            <input type="hidden" id="race-id-admin">
+                            <div class="form-group">
+                                <label for="race-name">Nome da Corrida</label>
+                                <input type="text" id="race-name" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="race-city">Cidade</label>
+                                <input type="text" id="race-city" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="race-date-admin">Data</label>
+                                <input type="date" id="race-date-admin" class="form-input" required style="color-scheme: dark;">
+                            </div>
+                             <div class="form-group">
+                                <label for="race-link">Link de Inscrição (Opcional)</label>
+                                <input type="url" id="race-link" placeholder="https://..." class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="race-calendar">Calendário</label>
+                                <select id="race-calendar" class="form-input">
+                                    <option value="copaAlcer">Copa Alcer</option>
+                                    <option value="geral">Corrida da Região</option>
+                                </select>
+                            </div>
+                            <div class="form-buttons-inline">
+                                <button type="submit" class="btn btn-primary">Salvar Corrida</button>
+                                <button type="reset" id="clear-form-button" class="btn btn-secondary">Limpar</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="admin-race-lists">
+                        <h3>Corridas Cadastradas</h3>
+                        <h4 class="admin-race-list-title">Copa Alcer</h4>
+                        <div id="copa-race-list" class="admin-race-list">
+                            <div class="loader" style="color:#1f2027;">...</div>
+                        </div>
+                        <h4 class="admin-race-list-title">Corridas da Região</h4>
+                        <div id="geral-race-list" class="admin-race-list">
+                            <div class="loader" style="color:#1f2027;">...</div>
+                        </div>
+                    </div>
+
+                    <div id="admin-upload-section">
+                        <h3>Upload de Dados</h3>
+                        <div class="form-group">
+                            <h4 class="admin-race-list-title">Resultados de Etapa Individual</h4>
+                            <p class="form-help-text">Use para adicionar os resultados de uma corrida recém-realizada.</p>
+                            <label for="race-select-results">Selecione a Etapa</label>
+                            <select id="race-select-results" class="form-input"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="results-file">Arquivo de Resultados (.json)</label>
+                            <input type="file" id="results-file" accept=".json" class="form-input-file"/>
+                        </div>
+                        <button id="upload-results-button" class="btn btn-primary">Enviar Resultados</button>
+                        <p id="upload-results-status" class="upload-status"></p>
+                        
+                        <div class="form-group" style="margin-top: 20px; border-top: 1px dashed #5f4c00; padding-top: 20px;">
+                             <h4 class="admin-race-list-title">Ranking Final da Copa</h4>
+                             <p class="form-help-text">Use para substituir todo o ranking geral da Copa com um arquivo consolidado.</p>
+                             <label for="ranking-file">Arquivo de Ranking Final (.json)</label>
+                             <input type="file" id="ranking-file" accept=".json" class="form-input-file"/>
+                        </div>
+                        <button id="upload-ranking-button" class="btn btn-primary">Enviar Ranking Final</button>
+                        <p id="upload-ranking-status" class="upload-status"></p>
+                    </div>
+
+                </div>
             </div>
         </div>
 
@@ -66,6 +146,24 @@
                 <div class="profile-list" id="public-profile-list">
                     <div class="loader">Carregando perfis públicos...</div>
                 </div>
+
+                <div class="public-calendar-section">
+                    <h2 class="section-title">Próximas Etapas - <span class="text-blue-highlight">Copa Alcer</span></h2>
+                    <div id="copa-container-public" class="calendar-grid">
+                        <p class="loader">Carregando calendário da Copa...</p>
+                    </div>
+
+                    <h2 class="section-title">Resultados de Etapas Anteriores</h2>
+                    <div id="resultados-container-public" class="calendar-grid">
+                        <p class="loader">Carregando resultados...</p>
+                    </div>
+
+                    <h2 class="section-title">Outras Corridas da Região</h2>
+                    <div id="geral-container-public" class="calendar-grid">
+                        <p class="loader">Carregando outras corridas...</p>
+                    </div>
+                </div>
+
             </div>
         </div>
         
@@ -93,14 +191,33 @@
             </div>
 
             <div class="controls-section hidden" id="controls-section">
-                <button class="btn-add" id="btn-add-new">➕ Adicionar Nova Corrida</button>
+                <button class="btn-add" id="btn-add-new">➕ Adicionar Nova Corrida Pessoal</button>
             </div>
 
             <div class="history-section">
+                <h2 class="dashboard-header">Meu Histórico Pessoal</h2>
                 <div id="history-container">
                     <div class="loader">Carregando histórico do Firebase...</div>
                 </div>
             </div>
+            
+            <div class="public-calendar-section" style="background: #1a1a2e; padding-top: 20px;">
+                <h2 class="section-title">Próximas Etapas - <span class="text-blue-highlight">Copa Alcer</span></h2>
+                <div id="copa-container-logged" class="calendar-grid">
+                    <p class="loader">Carregando calendário da Copa...</p>
+                </div>
+
+                <h2 class="section-title">Resultados de Etapas Anteriores</h2>
+                <div id="resultados-container-logged" class="calendar-grid">
+                    <p class="loader">Carregando resultados...</p>
+                </div>
+
+                <h2 class="section-title">Outras Corridas da Região</h2>
+                <div id="geral-container-logged" class="calendar-grid">
+                    <p class="loader">Carregando outras corridas...</p>
+                </div>
+            </div>
+
         </div>
 
         <div class="footer">
@@ -191,13 +308,29 @@
             </div>
         </form>
     </dialog>
+    
+    <div id="modal-overlay" class="v2-modal-overlay hidden">
+        <div id="results-modal" class="v2-modal-content">
+            <button id="btn-close-results-modal" class="v2-modal-close-btn">&times;</button>
+            <div class="v2-modal-header">
+                <h2 id="modal-title-results" class="v2-modal-title">Resultados da Corrida</h2>
+            </div>
+            <div class="v2-modal-body">
+                <input type="text" id="modal-search-input" placeholder="Buscar atleta na tabela de resultados..." class="form-input">
+                <div id="modal-content-results" class="v2-modal-results-container">
+                    </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script src="js/config.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/admin-logic.js"></script>
+    <script src="js/main-logic.js"></script>
 
 </body>
 </html>
